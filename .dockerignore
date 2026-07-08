@@ -2,6 +2,7 @@
 .gitignore
 .gitmodules
 .dockerignore
+workdir/addons/
 workdir/data/
 **/__pycache__
 **/*.pyc

@@ -2,15 +2,14 @@ FROM odoo:18.0
 
 USER root
 
-# Install addons Python dependencies
-COPY ./workdir/addons/requirements.txt /tmp/addons-requirements.txt
-COPY ./workdir/addons/requirements-fastapi.txt /tmp/addons-fastapi-requirements.txt
-RUN pip3 install --no-cache-dir -r /tmp/addons-requirements.txt \
-    && pip3 install --no-cache-dir -r /tmp/addons-fastapi-requirements.txt \
-    && rm /tmp/addons-requirements.txt /tmp/addons-fastapi-requirements.txt
+# Clone addons repo at build time (no submodule dependency on Railway)
+RUN apt-get update && apt-get install -y --no-install-recommends git \
+    && git clone --depth 1 https://github.com/bintangalsyahadat/ecocycle-odoo-addons.git /mnt/extra-addons \
+    && apt-get purge -y git && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
-# Copy custom addons to extra-addons path
-COPY ./workdir/addons /mnt/extra-addons
+# Install addons Python dependencies
+RUN pip3 install --no-cache-dir -r /mnt/extra-addons/requirements.txt \
+    && pip3 install --no-cache-dir -r /mnt/extra-addons/requirements-fastapi.txt
 
 # Copy Odoo config and inject pip-installed OCA addons path
 COPY ./odoo.conf /etc/odoo/
