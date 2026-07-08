@@ -16,9 +16,7 @@ RUN rm -rf /usr/lib/python3/dist-packages/typing_extensions* \
 RUN pip3 install --no-cache-dir --break-system-packages -r /mnt/extra-addons/requirements.txt \
     && pip3 install --no-cache-dir --break-system-packages -r /mnt/extra-addons/requirements-fastapi.txt
 
-# Copy Odoo config and inject pip-installed OCA addons path
+# Copy Odoo config
 COPY ./odoo.conf /etc/odoo/
-RUN PYTHON_SITE=$(python3 -c "import site; print(site.getsitepackages()[0])") \
-    && sed -i "s|^addons_path = .*|&,\${PYTHON_SITE}/odoo/addons|" /etc/odoo/odoo.conf
 
 USER odoo
