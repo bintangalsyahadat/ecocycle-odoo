@@ -19,4 +19,9 @@ RUN pip3 install --no-cache-dir --break-system-packages -r /mnt/extra-addons/req
 # Copy Odoo config
 COPY ./odoo.conf /etc/odoo/
 
+# Strip any literal ${PYTHON_SITE} from config (safety cleanup)
+RUN sed -i 's|,/${PYTHON_SITE}/odoo/addons||g' /etc/odoo/odoo.conf \
+    && echo "=== Final addons_path ===" \
+    && grep addons_path /etc/odoo/odoo.conf
+
 USER odoo
