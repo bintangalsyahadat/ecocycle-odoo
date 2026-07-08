@@ -1,0 +1,3 @@
+[submodule "workdir/addons"]
+	path = workdir/addons
+	url = https://github.com/bintangalsyahadat/ecocycle-odoo-addons.git

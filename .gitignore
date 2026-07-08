@@ -1,0 +1,17 @@
+# Odoo
+workdir/data/filestore/
+*.pyc
+__pycache__/
+*.pyo
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
