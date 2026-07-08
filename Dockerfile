@@ -22,12 +22,16 @@ RUN rm -rf /usr/lib/python3/dist-packages/typing_extensions* \
 RUN pip3 install --no-cache-dir --break-system-packages -r /mnt/extra-addons/requirements.txt \
     && pip3 install --no-cache-dir --break-system-packages -r /mnt/extra-addons/requirements-fastapi.txt
 
-# Copy Odoo config
-COPY ./odoo.conf /etc/odoo/
+COPY --chown=root:root ./odoo.conf /etc/odoo/
 
-# Strip any literal ${PYTHON_SITE} from config (safety cleanup)
-RUN sed -i 's|,/${PYTHON_SITE}/odoo/addons||g' /etc/odoo/odoo.conf \
-    && echo "=== Final addons_path ===" \
-    && grep addons_path /etc/odoo/odoo.conf
+# Strip any stale ${PYTHON_SITE} (safety cleanup)
+RUN sed -i 's|,/${PYTHON_SITE}/odoo/addons||g' /etc/odoo/odoo.conf
 
-USER odoo
+# Fix volume permissions at runtime (Railway mounts volumes as root)
+RUN echo '#!/bin/bash' > /fix-perms.sh \
+    && echo 'chown -R odoo:odoo /var/lib/odoo 2>/dev/null || true' >> /fix-perms.sh \
+    && chmod +x /fix-perms.sh
+
+# Keep running as root so Odoo entrypoint can chown data dir, then drop to odoo user
+USER root
+ENTRYPOINT ["/bin/bash", "-c", "/fix-perms.sh && exec /entrypoint.sh odoo"]
