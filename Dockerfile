@@ -1,13 +1,15 @@
 FROM odoo:18.0
 
 # Increment this to bust Docker cache on Railway
-ARG CACHEBUST=2
+ARG CACHEBUST=3
 
 USER root
 RUN echo "Cache bust: ${CACHEBUST}"
 
 # Clone addons repo at build time (no submodule dependency on Railway)
+# CACHEBUST ensures fresh clone when addons repo is updated
 RUN apt-get update && apt-get install -y --no-install-recommends git \
+    && echo "Cloning addons (cachebust=${CACHEBUST})" \
     && git clone --depth 1 https://github.com/bintangalsyahadat/ecocycle-odoo-addons.git /mnt/extra-addons \
     && apt-get purge -y git && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
