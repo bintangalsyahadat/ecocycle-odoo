@@ -1,6 +1,10 @@
 FROM odoo:18.0
 
+# Increment this to bust Docker cache on Railway
+ARG CACHEBUST=2
+
 USER root
+RUN echo "Cache bust: ${CACHEBUST}"
 
 # Clone addons repo at build time (no submodule dependency on Railway)
 RUN apt-get update && apt-get install -y --no-install-recommends git \
