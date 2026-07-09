@@ -1,7 +1,7 @@
 FROM odoo:18.0
 
 # Increment this to bust Docker cache on Railway
-ARG CACHEBUST=4
+ARG CACHEBUST=5
 
 USER root
 RUN echo "Cache bust: ${CACHEBUST}"
